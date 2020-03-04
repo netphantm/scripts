@@ -11,3 +11,10 @@
 
 This was written quick and dirty, so if you have any suggestions, please feel free to pull and modify it.
 ---
+
+### License
+
+[![License](http://img.shields.io/:license-mit-blue.svg?style=flat-square)](http://badges.mit-license.org)
+
+- **[MIT license](http://opensource.org/licenses/mit-license.php)**
+- Copyright 2020 © netphantm.
