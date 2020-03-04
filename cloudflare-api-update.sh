@@ -25,9 +25,14 @@ DNSREC_ID="baz372954025e0ba6aaa6d586b9e0b59"
 
 # No need to change anything beyond this point
 
+if [[ "$API_AUTH_KEY" == *"foo"* ]]; then
+  echo "ERROR - Please edit the script and set the config variables first!"
+  exit 1
+fi
+
 # show usage
 usage() {
-  printf "\nUsage:\n\n"
+  printf "\nUsage:\n"
   printf "$(basename $0) [-f|--force]\n"
   printf "      -f | --force - Force DNS update\n"
   printf "      -d | --debug - Enable debug\n"
@@ -56,6 +61,12 @@ DNS_IP=`curl -s -X GET "https://api.cloudflare.com/client/v4/zones/$ZONE_ID/dns_
      -H "X-Auth-Email: $API_ID" \
      -H "X-Auth-Key: $API_AUTH_KEY" \
      -H "Content-Type: application/json" | python -m json.tool | grep content | awk -F\" '{print $4}'`
+
+if [ ! $DNS_IP ]; then
+  echo "ERROR - Getting DNS entry from cloudflare didn't work!"
+  echo "Check your credentials."
+  exit 1
+fi
 
 if [ $BoxUSER ] && [ $BoxPW ] && [ $BoxShell ]; then
   # use IP from Fritz!Box
