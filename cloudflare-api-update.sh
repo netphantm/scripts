@@ -2,7 +2,7 @@
 # Author: Hugo <mail@hugo.ro>
 #
 # Dynamically update DNS on cloudflare through their API.
-# Uses jq and python (dirty, I know!).
+# Uses jq (dirty, I know!).
 # Set CONFIG values to your needs.
 
 # --- CONFIG START ---
@@ -60,7 +60,7 @@ done
 DNS_IP=`curl -s -X GET "https://api.cloudflare.com/client/v4/zones/$ZONE_ID/dns_records/$DNSREC_ID" \
      -H "X-Auth-Email: $API_ID" \
      -H "X-Auth-Key: $API_AUTH_KEY" \
-     -H "Content-Type: application/json" | python -m json.tool | grep content | awk -F\" '{print $4}'`
+     -H "Content-Type: application/json" | jq . | grep content | awk -F\" '{print $4}'`
 
 if [ ! $DNS_IP ]; then
   echo "ERROR - Getting DNS entry from cloudflare didn't work!"
@@ -81,7 +81,7 @@ if [ "$DNS_IP" != "$CURRENT_IP" ] || [ $FORCE ]; then
        -H "X-Auth-Email: $API_ID" \
        -H "X-Auth-Key: $API_AUTH_KEY" \
        -H "Content-Type: application/json" \
-       --data '{"type":"A","name":"'"$ZONE_NAME"'","content":"'"$CURRENT_IP"'","ttl":1,"proxied":false}'  | python -m json.tool`
+       --data '{"type":"A","name":"'"$ZONE_NAME"'","content":"'"$CURRENT_IP"'","ttl":1,"proxied":false}'  | jq .`
   SUCCESS=`echo "$UPDATE" | jq .'success'`
   DBG="INFO - renewed IP with: '$CURRENT_IP', success=$SUCCESS"
   logger --tag cloudflare-update $DBG
@@ -94,7 +94,7 @@ if [ $DEBUG ]; then
   echo "CURRENT_IP=$CURRENT_IP"
   echo "DNS_IP=$DNS_IP"
   if [ $SUCCESS ]; then
-    echo $UPDATE | python -m json.tool
+    echo $UPDATE | jq .
   fi
   echo "$DBG"
 fi
