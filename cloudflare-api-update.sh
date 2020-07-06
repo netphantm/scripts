@@ -76,6 +76,10 @@ else
   CURRENT_IP=`wget http://ipecho.net/plain -O - -q ; echo`
 fi
 
+if [ ! $CURRENT_IP ]; then
+  echo "ERROR - Getting current IP didn't work!"
+fi
+
 if [ "$DNS_IP" != "$CURRENT_IP" ] || [ $FORCE ]; then
   UPDATE=`curl -s -X PUT "https://api.cloudflare.com/client/v4/zones/$ZONE_ID/dns_records/$DNSREC_ID" \
        -H "X-Auth-Email: $API_ID" \
